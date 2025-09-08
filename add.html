@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Drugs</title>
+    <style>
+        body {
+            display: flex;
+            justify-self: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #mainDiv {
+            width: 500px;
+            margin: auto;
+            text-align: center;
+            padding: 20px;
+            border: 2px solid #bbb;
+            border-radius: 20px;
+        }
+
+        label {
+            font-size: 25px;
+        }
+
+        textarea {
+            font-size: 22px;
+            width: 80%;
+            margin-top: 10px;
+            padding: 10px 15px;
+            border: 2px solid#bbb;
+            border-radius: 5px;
+            resize: none;
+        }
+
+        select {
+            width: 85%;
+            padding: 10px 15px;
+            border: 2px solid#bbb;
+            border-radius: 5px;
+            font-size: 22px;
+        }
+
+        button {
+            background-color: blue;
+            color: white;
+            font-size: 22px;
+            width: 40%;
+            padding: 20px;
+            border: none;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            cursor: pointer;
+            background-color: rgb(32, 32, 124);
+        }
+
+        button:active {
+            background-color: rgb(11, 11, 49);
+        }
+
+        a {
+            font-size: 20px;
+        }
+
+        #messageDiv {
+            display: none;
+            padding: 10px 20px;
+            background-color: red;
+            color: white;
+            font-size: 20px;
+            position: absolute;
+            right: 20px;
+            top: 40px;
+            border-radius: 10px;
+        }
+
+        .animation-in {
+            animation: messageIn 0.5s forwards;
+        }
+
+        .animation-out {
+            animation: messageOut 0.5s forwards;
+        }
+
+        @keyframes messageIn {
+            from {transform: translateY(-20px); opacity: 0;}
+        }
+
+        @keyframes messageOut {
+            to {transform: translateY(-20px); opacity: 0;}
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="mainDiv">
+        <div id="messageDiv"></div>
+        <label>Drug Name</label>
+        <textarea rows="5" id="drugName" placeholder="Enter drug name"></textarea>
+        <br><br>
+        <select id="drugColor" value="White">
+            <option value="white">White</option>
+            <option value="yellow">Yellow</option>
+            <option value="red">Red</option>
+            <option value="green">Green</option>
+        </select>
+        <br><br>
+        <button onclick="addDrug()">Add</button>
+        <br><br>
+        <button style="background-color: red;" onclick="clearList()">Clear</button>
+        <br><br>
+        <a href="index.html" target="_blank">View drugs list</a>
+    </div>
+    
+    <script>
+
+        const drugNameInput = document.getElementById("drugName");
+        const drugColorInput = document.getElementById("drugColor");
+        const messageDiv = document.getElementById("messageDiv");
+
+
+        const drugs = [];
+
+
+        function addDrug() {
+
+            const drugName = drugNameInput.value;
+            const drugColor = drugColorInput.value;
+
+            if(drugName !== "" || drugColor !== "") {
+                drugs.push(`{"title":"${drugName}", "class":"${drugColor}"}`);
+                drugColorInput.value = "white";
+                drugNameInput.value = "";
+                saveList();
+                showMessage("Drug added successfully!");
+            }
+
+        }
+
+        function saveList() {
+            localStorage.setItem("drugs", JSON.stringify(drugs));
+        }
+
+        function clearList() {
+            const result = confirm("Are you sure you want to clear the drugs list?");
+            if(!result) return;
+            localStorage.clear();
+            showMessage("Drugs list cleared!");
+        }
+
+        function showMessage(message) {
+            messageDiv.style.display = "inline-block";
+            messageDiv.innerText = message;
+            messageDiv.className = "animation-in";
+            setTimeout(() => {
+                messageDiv.className = "animation-out";
+                setTimeout(() => {
+                    messageDiv.style.display = "none";
+                }, 500);
+            }, 3000);
+        }
+
+    </script>
+</body>
+</html>
