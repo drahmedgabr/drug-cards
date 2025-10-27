@@ -3,13 +3,342 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drug Cards</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Add Drugs</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            display: flex;
+            justify-self: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            gap: 40px;
+        }
+
+        #mainDiv {
+            width: 500px;
+            margin: auto;
+            text-align: center;
+            padding: 20px;
+            border: 2px solid #bbb;
+            border-radius: 10px;
+        }
+
+        label {
+            font-size: 25px;
+        }
+
+        textarea {
+            font-size: 22px;
+            width: 80%;
+            margin-top: 10px;
+            padding: 10px 15px;
+            border: 2px solid#bbb;
+            border-radius: 5px;
+            resize: none;
+        }
+
+        select {
+            width: 85%;
+            padding: 10px 15px;
+            border: 2px solid#bbb;
+            border-radius: 5px;
+            font-size: 22px;
+        }
+
+        button {
+            background-color: blue;
+            color: white;
+            font-size: 22px;
+            width: 40%;
+            padding: 20px;
+            border: none;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            cursor: pointer;
+            background-color: rgb(32, 32, 124);
+        }
+
+        button:active {
+            background-color: rgb(11, 11, 49);
+        }
+
+        a {
+            font-size: 20px;
+        }
+
+        #messageDiv {
+            display: none;
+            padding: 10px 20px;
+            background-color: red;
+            color: white;
+            font-size: 20px;
+            position: absolute;
+            right: 20px;
+            top: 40px;
+            border-radius: 10px;
+        }
+
+        .animation-in {
+            animation: messageIn 0.5s forwards;
+        }
+
+        .animation-out {
+            animation: messageOut 0.5s forwards;
+        }
+
+        @keyframes messageIn {
+            from {transform: translateY(-20px); opacity: 0;}
+        }
+
+        @keyframes messageOut {
+            to {transform: translateY(-20px); opacity: 0;}
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+
+        #labelsDiv {
+            padding: 20px;
+            border: 2px solid #bbb;
+            border-radius: 10px;
+        }
+
+        .label-div {
+            width: 300px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+        }
+
+        .label-div .actions i {
+            margin: 0 8px;
+            cursor: pointer;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.37);
+        }
+
+        .modal {
+            width: 500px;
+            padding: 20px;
+            border-radius: 10px;
+            border: 3px solid #bbb;
+            background-color: white;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-overlay .modal .close {
+            display: inline-block;
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+    
+
+    </style>
 </head>
 <body>
-    <div id="printArea" class="page">
-        <!-- Cards will be dynamically inserted here -->
+
+    <div class="container">
+        <div id="mainDiv">
+            <div id="messageDiv"></div>
+            <label>Drug Name</label>
+            <textarea rows="5" id="drugName" placeholder="Enter drug name"></textarea>
+            <br><br>
+            <select id="drugColor" value="White">
+                <option value="white">White</option>
+                <option value="yellow">Yellow</option>
+                <option value="red">Red</option>
+                <option value="green">Green</option>
+            </select>
+            <br><br>
+            <button onclick="addDrug()">Add</button>
+            <br><br>
+            <button style="background-color: red;" onclick="clearList()">Clear</button>
+            <br><br>
+            <a href="labels.html" target="_blank">View drugs list</a>
+        </div>
+
+        <div id="labelsDiv">
+
+        </div>
     </div>
-    <script src="script.js"></script>
+    <script>
+
+        const drugNameInput = document.getElementById("drugName");
+        const drugColorInput = document.getElementById("drugColor");
+        const messageDiv = document.getElementById("messageDiv");
+        const labelsDiv = document.getElementById("labelsDiv");
+
+
+        let drugs = [];
+
+
+        function addDrug() {
+
+            const drugName = drugNameInput.value;
+            const drugColor = drugColorInput.value;
+
+            if(drugName !== "" || drugColor !== "") {
+                drugs.push(new Drug(drugName, drugColor));
+                drugColorInput.value = "white";
+                drugNameInput.value = "";
+                saveList();
+                showMessage("Drug added successfully!");
+            }
+
+        }
+
+        function saveList() {
+            localStorage.setItem("drugs", JSON.stringify(drugs));
+            showLabels();
+        }
+
+        function clearList() {
+            const result = confirm("Are you sure you want to clear the drugs list?");
+            if(!result) return;
+            localStorage.clear();
+            showMessage("Drugs list cleared!");
+        }
+
+        function showMessage(message) {
+            messageDiv.style.display = "inline-block";
+            messageDiv.innerText = message;
+            messageDiv.className = "animation-in";
+            setTimeout(() => {
+                messageDiv.className = "animation-out";
+                setTimeout(() => {
+                    messageDiv.style.display = "none";
+                }, 500);
+            }, 3000);
+        }
+
+        function showLabels() {
+
+            labelsDiv.innerHTML = "";
+
+            drugs = JSON.parse(localStorage.getItem("drugs")) ?? [];
+            
+            drugs.forEach((drug, index) => {
+                const label = document.createElement("div");
+                label.innerHTML =  `
+                    <div class="label-div">
+                        <p>${drug.title}</p>
+                        <div class="actions">
+                            <i class="bi bi-pencil-fill" onclick="editLabel(${index})"></i>
+                            <i class="bi bi-trash3-fill" onclick="deleteLabel(${index})""></i>
+                        </div>
+                    </div>
+                    <hr>
+                `;
+                labelsDiv.appendChild(label);
+            });
+        }
+
+        showLabels();
+
+        function editLabel(index) {
+            
+            openModal(drugs[index], index);
+            
+        }
+
+        function deleteLabel(index) {
+            if(!confirm("Are you sure to delete label?")) return;
+
+            drugs.splice(index, 1);
+            saveList();
+        
+        }
+
+        
+        function openModal(drug, index) {
+            const modalDiv = document.createElement("div");
+            modalDiv.className = "modal-overlay";
+            modalDiv.innerHTML = `
+                <div class="modal">
+                    <div class="close">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </div>
+                    <h3>Edit Label</h3>
+                    <label>Drug Name</label>
+                    <textarea rows="5" id="drugName" placeholder="Enter drug name"></textarea>
+                    <br><br>
+                    <select id="drugColor">
+                        <option value="white">White</option>
+                        <option value="yellow">Yellow</option>
+                        <option value="red">Red</option>
+                        <option value="green">Green</option>
+                    </select>
+                    <br><br>
+                    <button id="modalAddBtn">Update</button>
+                </div>
+            `;
+            document.body.appendChild(modalDiv);
+
+            // Set the textarea/select values after DOM insertion
+            const textarea = modalDiv.querySelector('#drugName');
+            const select = modalDiv.querySelector('#drugColor');
+            if (textarea) textarea.value = drug && drug.title ? drug.title : '';
+            if (select) select.value = drug && drug.className ? drug.className : 'white';
+
+            // Attach event listeners instead of using inline handlers.
+            const closeBtn = modalDiv.querySelector('.close');
+            if (closeBtn) closeBtn.addEventListener('click', () => closeModal(modalDiv));
+
+            // Optional: clicking the overlay (outside modal) closes it
+            modalDiv.addEventListener('click', (e) => {
+                if (e.target === modalDiv) closeModal(modalDiv);
+            });
+
+            // Wire up Add button (preserves original addDrug usage)
+            const addBtn = modalDiv.querySelector('#modalAddBtn');
+            if (addBtn) addBtn.addEventListener('click', () => updateLabel(new Drug(textarea.value, select.value), index));
+        }
+
+        function closeModal() {
+            const el = document.querySelector(".modal-overlay");
+            if (el) el.remove();
+        }
+
+        function updateLabel(drug, index) {
+            drugs[index] = drug;
+            saveList();
+            closeModal();
+        }
+
+        class Drug {
+            
+            title;
+            className;
+
+            constructor(title, className) {
+                this.title = title;
+                this.className = className;
+            }
+
+        }
+
+    </script>
 </body>
 </html>
