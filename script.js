@@ -11,7 +11,7 @@ var printArea = document.getElementById("printArea");
 drugs.forEach((drug, index) => {
     
     const card = document.createElement("div");
-    card.className = `card ${drug.class}`;
+    card.className = `card ${drug.className}`;
     card.innerHTML = `<h3>${drug.title}</h3><div class="inputDiv"><p>Expire</p><div></div></div><div class="inputDiv"><p>Batch</p><div></div>`;
     printArea.appendChild(card);
 
