@@ -153,6 +153,10 @@
             font-size: 20px;
             cursor: pointer;
         }
+
+        p {
+            text-align: center;
+        }
     
 
     </style>
@@ -238,21 +242,27 @@
             labelsDiv.innerHTML = "";
 
             drugs = JSON.parse(localStorage.getItem("drugs")) ?? [];
-            
-            drugs.forEach((drug, index) => {
-                const label = document.createElement("div");
-                label.innerHTML =  `
-                    <div class="label-div">
-                        <p>${drug.title}</p>
-                        <div class="actions">
-                            <i class="bi bi-pencil-fill" onclick="editLabel(${index})"></i>
-                            <i class="bi bi-trash3-fill" onclick="deleteLabel(${index})""></i>
+
+            if(drugs.length == 0){
+                const noLabels = document.createElement("p");
+                noLabels.innerText = "No labels found";
+                labelsDiv.appendChild(noLabels);
+            } else {
+                drugs.forEach((drug, index) => {
+                    const label = document.createElement("div");
+                    label.innerHTML =  `
+                        <div class="label-div">
+                            <p>${drug.title}</p>
+                            <div class="actions">
+                                <i class="bi bi-pencil-fill" onclick="editLabel(${index})"></i>
+                                <i class="bi bi-trash3-fill" onclick="deleteLabel(${index})""></i>
+                            </div>
                         </div>
-                    </div>
-                    <hr>
-                `;
-                labelsDiv.appendChild(label);
-            });
+                        <hr>
+                    `;
+                    labelsDiv.appendChild(label);
+                });
+            }
         }
 
         showLabels();
